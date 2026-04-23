@@ -1,6 +1,6 @@
 import gspread
 from oauth2client.service_account import ServiceAccountCredentials
-from config import GOOGLE_CREDS, SHEET_NAME
+from config import GOOGLE_CREDS
 
 def init_sheet():
     scope = [
@@ -11,4 +11,4 @@ def init_sheet():
     creds = ServiceAccountCredentials.from_json_keyfile_dict(GOOGLE_CREDS, scope)
     client = gspread.authorize(creds)
 
-    return client.open(SHEET_NAME).sheet1
+    return client.open_by_key("1v586BKfmCZSQW9cNV02-vbED3qoRveuRIHOTnz8dffY").sheet1
