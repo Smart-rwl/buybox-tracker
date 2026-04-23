@@ -14,6 +14,7 @@ def run():
     asins = []
     meta = {}
 
+    # Read sheet
     for i, row in enumerate(rows[1:], start=2):
         asin = row[0]
         if not asin:
@@ -26,12 +27,15 @@ def run():
             "old_seller": row[2]
         }
 
+    # Run scraper
     results = asyncio.run(run_scraper(asins))
 
-    won = lost = unchanged = 0
+    won = 0
+    lost = 0
+    unchanged = 0
     lost_items = []
 
-    # ✅ FIXED LOOP (proper indentation)
+    # Process results
     for asin, new_seller, price, flag in results:
         data = meta[asin]
         row = data["row"]
@@ -40,12 +44,15 @@ def run():
 
         # Handle failed cases
         if flag == "FAILED":
-            sheet.update(f"C{row}:F{row}", [[
-                "FAILED",
-                "FAILED",
-                "Retry Next Run",
-                datetime.now().strftime("%Y-%m-%d %H:%M")
-            ]])
+            sheet.update(
+                values=[[
+                    "FAILED",
+                    "FAILED",
+                    "Retry Next Run",
+                    datetime.now().strftime("%Y-%m-%d %H:%M")
+                ]],
+                range_name=f"C{row}:F{row}"
+            )
             continue
 
         # Status logic
@@ -62,16 +69,19 @@ def run():
             unchanged += 1
 
         # Update sheet
-        sheet.update(f"C{row}:F{row}", [[
-            new_seller,
-            price,
-            status,
-            datetime.now().strftime("%Y-%m-%d %H:%M")
-        ]])
+        sheet.update(
+            values=[[
+                new_seller,
+                price,
+                status,
+                datetime.now().strftime("%Y-%m-%d %H:%M")
+            ]],
+            range_name=f"C{row}:F{row}"
+        )
 
         time.sleep(1)
 
-    # ✅ Telegram message (INSIDE function)
+    # Prepare Telegram message
     msg = f"""
 📊 Weekly Buy Box Report
 
@@ -90,6 +100,7 @@ No Change: {unchanged}
     if failed:
         msg += "\n⚠️ Failed:\n" + "\n".join(failed[:10])
 
+    # Send notification
     send(msg)
 
 
