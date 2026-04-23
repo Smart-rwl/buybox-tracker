@@ -1,5 +1,6 @@
 import gspread
 from oauth2client.service_account import ServiceAccountCredentials
+from config import GOOGLE_CREDS, SHEET_NAME
 
 def init_sheet():
     scope = [
@@ -7,7 +8,7 @@ def init_sheet():
         "https://www.googleapis.com/auth/drive"
     ]
 
-    creds = ServiceAccountCredentials.from_json_keyfile_name("creds.json", scope)
+    creds = ServiceAccountCredentials.from_json_keyfile_dict(GOOGLE_CREDS, scope)
     client = gspread.authorize(creds)
 
-    return client.open("BuyBox Tracker").sheet1
+    return client.open(SHEET_NAME).sheet1
