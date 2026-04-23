@@ -1,5 +1,7 @@
 import os
 import json
+from dotenv import load_dotenv
+load_dotenv()
 
 GOOGLE_CREDS = json.loads(os.environ["GOOGLE_CREDS_JSON"])
 SHEET_NAME = os.environ["SHEET_NAME"]
