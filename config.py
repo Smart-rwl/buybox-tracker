@@ -8,4 +8,4 @@ TELEGRAM_TOKEN = os.environ["TELEGRAM_TOKEN"]
 TELEGRAM_CHAT_ID = os.environ["TELEGRAM_CHAT_ID"]
 
 MAX_CONCURRENCY = int(os.getenv("MAX_CONCURRENCY") or 2)
-HEADLESS = os.getenv("HEADLESS", "true") == "true"
+HEADLESS = (os.getenv("HEADLESS") or "true") == "true"
