@@ -31,11 +31,18 @@ def run():
     won = lost = unchanged = 0
     lost_items = []
 
-    for asin, new_seller, price in results:
-        data = meta[asin]
-        row = data["row"]
-        old = data["old_seller"]
-        your = data["your_name"]
+    for asin, new_seller, price, flag in results:
+    data = meta[asin]
+    row = data["row"]
+
+    if flag == "FAILED":
+        sheet.update(f"C{row}:F{row}", [[
+            "FAILED",
+            "FAILED",
+            "Retry Next Run",
+            datetime.now().strftime("%Y-%m-%d %H:%M")
+        ]])
+        continue
 
         if old != new_seller:
             if new_seller.lower() == your.lower():
