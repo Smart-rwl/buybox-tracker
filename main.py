@@ -31,19 +31,24 @@ def run():
     won = lost = unchanged = 0
     lost_items = []
 
+    # ✅ FIXED LOOP (proper indentation)
     for asin, new_seller, price, flag in results:
-    data = meta[asin]
-    row = data["row"]
+        data = meta[asin]
+        row = data["row"]
+        old = data["old_seller"]
+        your = data["your_name"]
 
-    if flag == "FAILED":
-        sheet.update(f"C{row}:F{row}", [[
-            "FAILED",
-            "FAILED",
-            "Retry Next Run",
-            datetime.now().strftime("%Y-%m-%d %H:%M")
-        ]])
-        continue
+        # Handle failed cases
+        if flag == "FAILED":
+            sheet.update(f"C{row}:F{row}", [[
+                "FAILED",
+                "FAILED",
+                "Retry Next Run",
+                datetime.now().strftime("%Y-%m-%d %H:%M")
+            ]])
+            continue
 
+        # Status logic
         if old != new_seller:
             if new_seller.lower() == your.lower():
                 status = "Won"
@@ -56,6 +61,7 @@ def run():
             status = "No Change"
             unchanged += 1
 
+        # Update sheet
         sheet.update(f"C{row}:F{row}", [[
             new_seller,
             price,
@@ -65,6 +71,7 @@ def run():
 
         time.sleep(1)
 
+    # ✅ Telegram message (INSIDE function)
     msg = f"""
 📊 Weekly Buy Box Report
 
@@ -74,18 +81,16 @@ Lost: {lost}
 No Change: {unchanged}
 """
 
-    
-
     if lost_items:
-    msg += "\n🔻 Lost:\n" + "\n".join(lost_items[:10])
+        msg += "\n🔻 Lost:\n" + "\n".join(lost_items[:10])
 
-# ✅ ADD THIS (failed ASINs)
-failed = [r[0] for r in results if r[3] == "FAILED"]
+    # Failed ASINs
+    failed = [r[0] for r in results if r[3] == "FAILED"]
 
-if failed:
-    msg += "\n⚠️ Failed:\n" + "\n".join(failed[:10])
+    if failed:
+        msg += "\n⚠️ Failed:\n" + "\n".join(failed[:10])
 
-send(msg)
+    send(msg)
 
 
 if __name__ == "__main__":
