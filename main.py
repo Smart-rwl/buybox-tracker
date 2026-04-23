@@ -74,10 +74,18 @@ Lost: {lost}
 No Change: {unchanged}
 """
 
-    if lost_items:
-        msg += "\n🔻 Lost:\n" + "\n".join(lost_items[:10])
+    
 
-    send(msg)
+    if lost_items:
+    msg += "\n🔻 Lost:\n" + "\n".join(lost_items[:10])
+
+# ✅ ADD THIS (failed ASINs)
+failed = [r[0] for r in results if r[3] == "FAILED"]
+
+if failed:
+    msg += "\n⚠️ Failed:\n" + "\n".join(failed[:10])
+
+send(msg)
 
 
 if __name__ == "__main__":
